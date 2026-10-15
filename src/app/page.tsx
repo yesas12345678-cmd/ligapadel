@@ -5,8 +5,8 @@ import { Header } from '@/components/Header';
 import { StandingsTable } from '@/components/StandingsTable';
 import { MatchesView } from '@/components/MatchesView';
 import { PlayersView } from '@/components/PlayersView';
-import { DokployTab } from '@/components/DokployTab';
 import { ResultModal } from '@/components/ResultModal';
+import { AuthGate, LEAGUE_PASSWORD, AUTH_STORAGE_KEY } from '@/components/AuthGate';
 import { INITIAL_MATCHES, INITIAL_PLAYERS } from '@/lib/initialData';
 import { calculateStandings } from '@/lib/ranking';
 import { Match, Player } from '@/types/padel';
@@ -15,6 +15,7 @@ const LOCAL_STORAGE_KEY = 'ligapadel_matches_v1';
 const LOCAL_STORAGE_PLAYERS_KEY = 'ligapadel_players_v1';
 
 export default function HomePage() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [activeTab, setActiveTab] = useState<'standings' | 'matches' | 'players' | 'dokploy'>('standings');
   const [matches, setMatches] = useState<Match[]>(INITIAL_MATCHES);
   const [players, setPlayers] = useState<Player[]>(INITIAL_PLAYERS);
@@ -31,7 +32,21 @@ export default function HomePage() {
     status: 'checking',
   });
 
-  // Cargar estado inicial y comprobar Dokploy
+  // Comprobar autenticación guardada en localStorage
+  useEffect(() => {
+    try {
+      const savedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
+      if (savedAuth === LEAGUE_PASSWORD) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
+  // Cargar estado inicial y sincronizar con PostgreSQL
   useEffect(() => {
     // 1. Cargar desde localStorage primero para rapidez
     try {
@@ -65,7 +80,7 @@ export default function HomePage() {
       const statusData = await statusRes.json();
       setDbStatus(statusData);
 
-      // Si la base de datos o el endpoint devuelve partidos, cargarlos
+      // Si la base de datos devuelve partidos, cargarlos
       const matchesRes = await fetch('/api/matches');
       const matchesData = await matchesRes.json();
       if (matchesData.matches && Array.isArray(matchesData.matches) && matchesData.matches.length > 0) {
@@ -128,6 +143,22 @@ export default function HomePage() {
   const totalMatches = matches.length;
   const playedMatches = matches.filter((m) => m.isPlayed).length;
 
+  // Pantalla de carga mientras se verifica la sesión en el navegador
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-3">
+        <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-400 rounded-full animate-spin"></div>
+        <p className="text-xs text-slate-400 font-mono">Cargando Liga de Pádel...</p>
+      </div>
+    );
+  }
+
+  // Si no está autenticado, mostrar pantalla de contraseña
+  if (!isAuthenticated) {
+    return <AuthGate onSuccess={() => setIsAuthenticated(true)} />;
+  }
+
+  // Si está autenticado, mostrar la aplicación completa
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans">
       {/* Barra Superior y Navegación */}
@@ -161,13 +192,6 @@ export default function HomePage() {
             players={players}
             standings={standings}
             onAddPlayer={handleAddPlayer}
-          />
-        )}
-
-        {activeTab === 'dokploy' && (
-          <DokployTab
-            dbStatus={dbStatus}
-            onRefreshStatus={checkDbAndFetchMatches}
           />
         )}
       </main>
