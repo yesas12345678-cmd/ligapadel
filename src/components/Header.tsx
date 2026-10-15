@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Trophy, Calendar, Users, Server, Activity, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Trophy, Calendar, Users, Server, Activity } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'standings' | 'matches' | 'players' | 'dokploy';
@@ -59,35 +59,6 @@ export function Header({
                 {playedMatches} / {totalMatches} ({progressPercent}%)
               </span>
             </div>
-
-            {/* Dokploy DB status */}
-            <button
-              onClick={() => setActiveTab('dokploy')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
-                dbStatus.status === 'connected'
-                  ? 'bg-emerald-950/40 border-emerald-700/60 text-emerald-300 hover:bg-emerald-900/40'
-                  : dbStatus.status === 'checking'
-                  ? 'bg-slate-900 border-slate-700 text-slate-300'
-                  : 'bg-amber-950/40 border-amber-700/60 text-amber-300 hover:bg-amber-900/40'
-              }`}
-            >
-              {dbStatus.status === 'connected' ? (
-                <>
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Dokploy VPS: <strong>Online ({dbStatus.latencyMs}ms)</strong></span>
-                </>
-              ) : dbStatus.status === 'checking' ? (
-                <>
-                  <Activity className="w-3.5 h-3.5 animate-spin text-slate-400" />
-                  <span>Comprobando Dokploy...</span>
-                </>
-              ) : (
-                <>
-                  <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Modo Local / Dokploy Config</span>
-                </>
-              )}
-            </button>
           </div>
         </div>
 
