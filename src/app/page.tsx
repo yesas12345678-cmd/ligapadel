@@ -184,16 +184,9 @@ export default function HomePage() {
       <footer className="border-t border-slate-900 bg-slate-950/90 py-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>
-            Liga de Pádel 2026 · Diseñado para Netlify y PostgreSQL en Dokploy (VPS)
+            Liga de Pádel 2026
           </p>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => setActiveTab('dokploy')}
-              className="text-emerald-400 hover:underline"
-            >
-              Configurar Dokploy
-            </button>
-            <span>·</span>
             <span>Regla de puntos: 3V · 1E · 0D</span>
           </div>
         </div>

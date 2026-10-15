@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Trophy, Calendar, Users, Server, Activity } from 'lucide-react';
+import { Trophy, Calendar, Users, Activity } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'standings' | 'matches' | 'players' | 'dokploy';
@@ -98,18 +98,6 @@ export function Header({
           >
             <Users className="w-4 h-4 text-blue-300" />
             <span>Jugadores ({19})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('dokploy')}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'dokploy'
-                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-          >
-            <Server className="w-4 h-4 text-purple-300" />
-            <span>Dokploy & Netlify</span>
           </button>
         </div>
       </div>
