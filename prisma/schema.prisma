@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  preferredPosition String   @default("AMBOS") // "REVES", "DERECHA", "AMBOS"
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Match {
+  id          String   @id @default(cuid())
+  round       Int      // 1 a 12 (Jornada)
+  matchNumber Int      // 1 a 4 (Partido en la jornada)
+  
+  // Pareja 1
+  player1Name String   // Jugador 1 (Revés)
+  player2Name String   // Jugador 2 (Derecha)
+  
+  // Pareja 2
+  player3Name String   // Jugador 3 (Revés)
+  player4Name String   // Jugador 4 (Derecha)
+
+  // Marcadores de Sets
+  set1Pair1   Int?
+  set1Pair2   Int?
+  set2Pair1   Int?
+  set2Pair2   Int?
+  set3Pair1   Int?
+  set3Pair2   Int?
+
+  // Marcador total directo (opcional para partidas rápidas)
+  gamesPair1  Int?
+  gamesPair2  Int?
+
+  // Resultado: "PAIR1" | "PAIR2" | "DRAW" | null
+  winner      String?  
+  isPlayed    Boolean  @default(false)
+  playedAt    DateTime?
+  notes       String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([round, matchNumber])
+}
+
+model LeagueConfig {
+  id            String   @id @default("default")
+  pointsForWin  Int      @default(3)
+  pointsForDraw Int      @default(1)
+  pointsForLoss Int      @default(0)
+  name          String   @default("Liga de Pádel 2026")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
