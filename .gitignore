@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scratch & dumps
+scratch/
+supabase_dump.json
+*.dump
+*.sql
